@@ -1,0 +1,32 @@
+
+var util    = require('util');
+var client  = require('ft-api-client')(process.env.apikey, {});
+var term    = process.argv[2];
+
+client
+  .search(term, { quantity: 30 })
+  .then(function (result) {
+        result.articles.forEach(function (article) {
+            var meta = [].concat(
+                article.people,
+                article.organisations,
+                article.regions,
+                article.authors,
+                article.topics
+            )
+            meta.map(function (tagOuter) { 
+                meta
+                    .filter(function (tagInner) {
+                        return tagOuter.name !== tagInner.name;
+                    })
+                    .map(function (tagInner) {
+                        console.log(util.format('%s | %s | %s -> %s', tagOuter.name, tagInner.name, tagOuter.taxonomy, tagInner.taxonomy))
+                    })
+                })
+        })
+     process.exit(code=0);
+  })
+  .catch(function (err) {
+        console.log(err);
+  })
+
